@@ -13,6 +13,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Lock, Rocket, MapPin, CheckCircle2, Loader2 } from "lucide-react";
 
+const budgetOptions = ["< $20k (MVP)", "$20k - $50k (Growth)", "$50k+ (Enterprise)"] as const;
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z
@@ -44,9 +46,7 @@ const formSchema = z.object({
         message: "Please enter a valid URL",
       }
     ),
-  budget: z.enum(["< $20k (MVP)", "$20k - $50k (Growth)", "$50k+ (Enterprise)"], {
-    required_error: "Please select a budget range",
-  }),
+  budget: z.enum(budgetOptions),
   projectDetails: z.string().min(20, "Please provide more details (at least 20 characters)"),
   privacyConsent: z.boolean().refine((val) => val === true, {
     message: "You must agree to the privacy policy",
@@ -54,8 +54,6 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
-
-const budgetOptions = ["< $20k (MVP)", "$20k - $50k (Growth)", "$50k+ (Enterprise)"] as const;
 
 export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);

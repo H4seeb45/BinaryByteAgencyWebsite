@@ -20,6 +20,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
+const budgetOptions = [
+  "< $20k (MVP)",
+  "$20k - $50k (Growth)",
+  "$50k+ (Enterprise)",
+] as const;
+
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z
@@ -28,41 +34,43 @@ const formSchema = z.object({
     .refine(
       (email) => {
         const domain = email.split("@")[1]?.toLowerCase();
-        const freeEmailDomains = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com", "aol.com"];
+        const freeEmailDomains = [
+          "gmail.com",
+          "hotmail.com",
+          "yahoo.com",
+          "outlook.com",
+          "aol.com",
+        ];
         return !freeEmailDomains.includes(domain || "");
       },
       {
         message: "Please use your work email address",
       }
     ),
-  companyUrl: z
-    .string()
-    .refine(
-      (url) => {
-        if (!url) return true;
-        try {
-          new URL(url);
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      {
-        message: "Please enter a valid URL",
+  companyUrl: z.string().refine(
+    (url) => {
+      if (!url) return true;
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
       }
-    ),
-  budget: z.enum(["< $20k (MVP)", "$20k - $50k (Growth)", "$50k+ (Enterprise)"], {
-    required_error: "Please select a budget range",
-  }),
-  projectDetails: z.string().min(20, "Please provide more details (at least 20 characters)"),
+    },
+    {
+      message: "Please enter a valid URL",
+    }
+  ),
+  budget: z.enum(budgetOptions),
+  projectDetails: z
+    .string()
+    .min(20, "Please provide more details (at least 20 characters)"),
   privacyConsent: z.boolean().refine((val) => val === true, {
     message: "You must agree to the privacy policy",
   }),
 });
 
 type FormData = z.infer<typeof formSchema>;
-
-const budgetOptions = ["< $20k (MVP)", "$20k - $50k (Growth)", "$50k+ (Enterprise)"] as const;
 
 interface ContactModalProps {
   open: boolean;
@@ -132,7 +140,8 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
             Start Your Project
           </DialogTitle>
           <DialogDescription className="text-secondary">
-            Tell us about your vision. Our engineering team reviews every brief within 24 hours.
+            Tell us about your vision. Our engineering team reviews every brief
+            within 24 hours.
           </DialogDescription>
         </DialogHeader>
 
@@ -145,7 +154,10 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 mt-4">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-5 mt-4"
+              >
                 {/* Row 1: Name and Email */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -162,7 +174,9 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                       placeholder="John Doe"
                     />
                     {errors.name && (
-                      <p className="text-xs text-red-400">{errors.name.message}</p>
+                      <p className="text-xs text-red-400">
+                        {errors.name.message}
+                      </p>
                     )}
                   </div>
                   <div className="space-y-2">
@@ -180,7 +194,9 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                       placeholder="john@company.com"
                     />
                     {errors.email && (
-                      <p className="text-xs text-red-400">{errors.email.message}</p>
+                      <p className="text-xs text-red-400">
+                        {errors.email.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -201,7 +217,9 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                     placeholder="https://company.com"
                   />
                   {errors.companyUrl && (
-                    <p className="text-xs text-red-400">{errors.companyUrl.message}</p>
+                    <p className="text-xs text-red-400">
+                      {errors.companyUrl.message}
+                    </p>
                   )}
                 </div>
 
@@ -233,7 +251,9 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                     ))}
                   </div>
                   {errors.budget && (
-                    <p className="text-xs text-red-400 mt-1">{errors.budget.message}</p>
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.budget.message}
+                    </p>
                   )}
                 </div>
 
@@ -253,7 +273,9 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                     placeholder="Tell us about the problem you are solving and your desired timeline..."
                   />
                   {errors.projectDetails && (
-                    <p className="text-xs text-red-400">{errors.projectDetails.message}</p>
+                    <p className="text-xs text-red-400">
+                      {errors.projectDetails.message}
+                    </p>
                   )}
                 </div>
 
@@ -262,7 +284,9 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                   <Checkbox
                     id="modal-privacyConsent"
                     checked={privacyConsent}
-                    onCheckedChange={(checked) => setValue("privacyConsent", checked === true)}
+                    onCheckedChange={(checked) =>
+                      setValue("privacyConsent", checked === true)
+                    }
                     className="mt-0.5"
                   />
                   <Label
@@ -270,18 +294,27 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                     className="text-xs text-secondary leading-relaxed cursor-pointer"
                   >
                     I agree to the{" "}
-                    <a href="/privacy" className="text-primary hover:underline" target="_blank">
+                    <a
+                      href="/privacy"
+                      className="text-primary hover:underline"
+                      target="_blank"
+                    >
                       Privacy Policy
                     </a>{" "}
                     and consent to being contacted by Binary Byte.
                   </Label>
                 </div>
                 {errors.privacyConsent && (
-                  <p className="text-xs text-red-400">{errors.privacyConsent.message}</p>
+                  <p className="text-xs text-red-400">
+                    {errors.privacyConsent.message}
+                  </p>
                 )}
 
                 {/* Submit Button */}
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <Button
                     type="submit"
                     disabled={isSubmitting}
@@ -330,7 +363,8 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
                 transition={{ delay: 0.3 }}
                 className="text-secondary text-sm"
               >
-                Our team will review your brief within 24 hours and get back to you.
+                Our team will review your brief within 24 hours and get back to
+                you.
               </motion.p>
             </motion.div>
           )}
@@ -339,4 +373,3 @@ export function ContactModal({ open, onOpenChange }: ContactModalProps) {
     </Dialog>
   );
 }
-
